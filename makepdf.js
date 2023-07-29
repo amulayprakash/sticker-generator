@@ -2,7 +2,7 @@ const Jimp = require("jimp");
 const fs = require("fs");
 
 async function addImageOverImage(
-  baseFile,
+  baseImage,
   overlayFile,
   posx,
   posy,
@@ -12,7 +12,6 @@ async function addImageOverImage(
 ) {
   try {
     // Load the base image and overlay image using Jimp
-    const baseImage = await Jimp.read(baseFile);
     const overlayImage = await Jimp.read(overlayFile);
 
     // optional
@@ -46,14 +45,7 @@ async function addImageOverImage(
       opacityDest: 1, // The opacity of the base image
     });
 
-    // Save the manipulated image
-    const outputFilePath = `${outFile}.png`;
-    await baseImage.writeAsync(outputFilePath);
-
-    console.log(
-      "Image manipulation complete. Output saved at:",
-      outputFilePath
-    );
+    console.log("Image manipulation complete. Output saved ");
   } catch (error) {
     console.error("Error:", error);
   }
@@ -67,30 +59,136 @@ const makeFinalPng = async () => {
     const baseHeight = image.getHeight();
     const baseWidht = image.getWidth();
 
-    let baseFile = "template.png";
+    const baseImage = await Jimp.read("template.png");
     let overlayFile = "final-output.png";
-    let posx = 116;
-    let posy = 268;
+    /*
+    // first vertical
+    let pos1x = 116;
+    let pos1y = 268;
+    await addImageOverImage(baseImage, overlayFile, pos1x, pos1y, 0.53, 90);
+
     await addImageOverImage(
-      baseFile,
+      baseImage,
       overlayFile,
-      posx,
-      posy,
-      0.52,
-      90,
-      "test"
+      pos1x + 540,
+      pos1y,
+      0.53,
+      90
+    );
+    await addImageOverImage(
+      baseImage,
+      overlayFile,
+      pos1x,
+      pos1y + 495,
+      0.53,
+      90
     );
 
-    await addImageOverImage("test.png", overlayFile, 381, 187, 0.3, 0, "test1");
+    // second horizontal
+    let pos2x = 381;
+    let pos2y = 186;
+    await addImageOverImage(baseImage, overlayFile, pos2x, pos2y, 0.31, 0);
+
     await addImageOverImage(
-      "test1.png",
+      baseImage,
       overlayFile,
-      381,
-      343,
-      0.3,
-      0,
-      "test2"
+      pos2x + 542,
+      pos2y,
+      0.31,
+      0
     );
+
+    await addImageOverImage(
+      baseImage,
+      overlayFile,
+      pos2x,
+      pos2y + 497,
+      0.31,
+      0
+    );
+
+    // third horizontal
+    let pos3x = 381;
+    let pos3y = 343;
+    await addImageOverImage(baseImage, overlayFile, pos3x, pos3y, 0.31, 0);
+
+    await addImageOverImage(
+      baseImage,
+      overlayFile,
+      pos3x + 542,
+      pos3y,
+      0.31,
+      0
+    );
+
+    await addImageOverImage(
+      baseImage,
+      overlayFile,
+      pos3x,
+      pos3y + 497,
+      0.31,
+      0
+    );
+*/
+
+    let apos1x = 116; //vert
+    let apos1y = 268; //vert
+    let initVertx = 116;
+
+    let apos2x = 376; //hori 1
+    let apos2y = 186; //hori 1
+    let initHorix1 = 376;
+
+    let apos3x = 376; //hori 2
+    let apos3y = 343; //hori 2
+    let initHorix2 = 376;
+
+    for (let i = 1; i <= 6; i++) {
+      for (let j = 1; j <= 4; j++) {
+        // vertical image
+        await addImageOverImage(
+          baseImage,
+          overlayFile,
+          apos1x,
+          apos1y,
+          0.53,
+          90
+        );
+        apos1x += 540;
+
+        //horizontal one
+        await addImageOverImage(
+          baseImage,
+          overlayFile,
+          apos2x,
+          apos2y,
+          0.32,
+          0
+        );
+        apos2x += 542;
+
+        // horizontal two
+        await addImageOverImage(
+          baseImage,
+          overlayFile,
+          apos3x,
+          apos3y,
+          0.31,
+          0
+        );
+        apos3x += 542;
+      }
+      apos1x = initVertx;
+      apos1y += 495;
+
+      apos2x = initHorix1;
+      apos2y += 496;
+
+      apos3x = initHorix2;
+      apos3y += 496;
+    }
+
+    await baseImage.writeAsync("final.png");
   } catch (err) {
     console.log(err);
   }
