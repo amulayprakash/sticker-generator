@@ -1,6 +1,6 @@
 const Jimp = require("jimp");
 const axios = require("axios");
-const fs = require("fs");
+const XLSX = require("xlsx");
 
 async function saveImageFromAPI(imageUrl) {
   try {
@@ -81,32 +81,55 @@ async function addImageOnImage(baseImage, url) {
       opacitySource: 1, // The opacity of the overlay image
       opacityDest: 1, // The opacity of the base image
     });
-
-    // Save the manipulated image
-    const outputFilePath = "final-output.png";
-    await baseImage.writeAsync(outputFilePath);
-
-    console.log(
-      "Image manipulation complete. Output saved at:",
-      outputFilePath
-    );
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
-const makeSingleEntitySticker = async () => {
+const makeSingleEntitySticker = async (outputFilePath, obj) => {
   try {
     const imageFile = "StickerTemplate.png";
     const image = await Jimp.read(imageFile);
-
-    const obj = {
-      id: "53511",
-      pin: "1779",
-      url: "http://wesafeqr.com/qr/zjrVh5",
-    };
     await addTextToImage(image, obj.id, obj.pin);
     await addImageOnImage(image, obj.url);
-  } catch (err) {}
+
+    await image.writeAsync(outputFilePath);
+  } catch (err) {
+    console.log(err);
+  }
 };
-makeSingleEntitySticker();
+
+const getDateToday = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1; // Months are zero-indexed, so add 1
+  const day = today.getDate();
+  return `${day}-${month}-${year}`;
+};
+const makeAllSticker = async () => {
+  try {
+    const workbook = XLSX.readFile("devsample.xlsx");
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet);
+    const promises = [];
+
+    let fileNum = 1;
+    const root = getDateToday();
+    for (let i = 0; i < data.length; i++) {
+      promises.push(
+        makeSingleEntitySticker(
+          `generatedFiles/${root}/lot${fileNum}/${(i % 24) + 1}.png`,
+          data[i]
+        )
+      );
+      if ((i + 1) % 24 === 0) fileNum++;
+    }
+    await Promise.all(promises);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+makeAllSticker();
+// makeSingleEntitySticker();
