@@ -94,7 +94,6 @@ const makeFinalPng = async () => {
             }
           } else overlayImage = await Jimp.read("StickerTemplate.png");
 
-          console.log(overlayFile, "\n");
           await addImageOverImage(
             baseImage,
             overlayImage,
@@ -104,7 +103,16 @@ const makeFinalPng = async () => {
             90
           );
           apos1x += 540;
-
+          if (flag !== 1) {
+            try {
+              overlayImage = await Jimp.read(overlayFile);
+            } catch (err) {
+              console.log(err);
+              flag = 1;
+              overlayImage = await Jimp.read("StickerTemplate.png");
+              overlayFile = "";
+            }
+          } else overlayImage = await Jimp.read("StickerTemplate.png");
           //horizontal one
           await addImageOverImage(
             baseImage,
@@ -115,7 +123,16 @@ const makeFinalPng = async () => {
             0
           );
           apos2x += 542;
-
+          if (flag !== 1) {
+            try {
+              overlayImage = await Jimp.read(overlayFile);
+            } catch (err) {
+              console.log(err);
+              flag = 1;
+              overlayImage = await Jimp.read("StickerTemplate.png");
+              overlayFile = "";
+            }
+          } else overlayImage = await Jimp.read("StickerTemplate.png");
           // horizontal two
           await addImageOverImage(
             baseImage,
@@ -138,7 +155,7 @@ const makeFinalPng = async () => {
         apos3x = initHorix2;
         apos3y += 496;
       }
-      await baseImage.writeAsync(`final${folderNum}.png`);
+      await baseImage.writeAsync(`final${folderNum}.pdf`);
       folderNum++;
       fileNum = 1;
       if (flag === 1) break;
