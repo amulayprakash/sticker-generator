@@ -1,7 +1,6 @@
 const Jimp = require("jimp");
 const { PDFDocument } = require("pdf-lib");
 const XLSX = require("xlsx");
-const fs = require("fs");
 
 const { makeSingleEntitySticker } = require("./draw.js");
 
@@ -135,7 +134,7 @@ const makeFinalPng = async (xldata) => {
     }
 
     const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync("test.pdf", pdfBytes);
+
     return pdfBytes;
   } catch (err) {
     console.log(err);
