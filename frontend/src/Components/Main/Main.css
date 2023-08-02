@@ -1,0 +1,12 @@
+.main {
+  margin: 10vh 20vw 10vh 20vw;
+}
+.tablestyle {
+  max-height: 30vh;
+  overflow: scroll;
+}
+.mid {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+}

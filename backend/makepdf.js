@@ -1,7 +1,8 @@
 const Jimp = require("jimp");
 const { PDFDocument } = require("pdf-lib");
-const fs = require("fs");
 const XLSX = require("xlsx");
+const fs = require("fs");
+
 const { makeSingleEntitySticker } = require("./draw.js");
 
 async function addImageOverImage(
@@ -31,25 +32,18 @@ async function addImageOverImage(
     throw Error(error);
   }
 }
-const getDateToday = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1; // Months are zero-indexed, so add 1
-  const day = today.getDate();
-  return `${day}-${month}-${year}`;
-};
-const makeFinalPng = async () => {
+
+const makeFinalPng = async (xldata) => {
   try {
     // xl raw data - start
-    const workbook = XLSX.readFile("devsample.xlsx");
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const xldata = XLSX.utils.sheet_to_json(worksheet);
+    // const workbook = XLSX.readFile("devsample.xlsx");
+    // const sheetName = workbook.SheetNames[0];
+    // const worksheet = workbook.Sheets[sheetName];
+    // const xldata = XLSX.utils.sheet_to_json(worksheet);
     // xl raw data - over
 
     const pdfDoc = await PDFDocument.create();
 
-    const root = getDateToday();
     let folderNum = 1;
     let fileNum = 1;
     let flag = 0;
@@ -142,9 +136,10 @@ const makeFinalPng = async () => {
 
     const pdfBytes = await pdfDoc.save();
     fs.writeFileSync("test.pdf", pdfBytes);
+    return pdfBytes;
   } catch (err) {
     console.log(err);
   }
 };
 
-makeFinalPng();
+module.exports = { makeFinalPng };

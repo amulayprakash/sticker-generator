@@ -1,6 +1,5 @@
 const Jimp = require("jimp");
 const axios = require("axios");
-const XLSX = require("xlsx");
 
 async function saveImageFromAPI(imageUrl) {
   try {
